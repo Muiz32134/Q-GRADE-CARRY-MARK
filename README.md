@@ -19,4 +19,4 @@ I'm Wan Abdul Muiz Bin Wan Yusoff,23 years old.Third year student of Bachelor of
 
 ## Demo
 
-![demo gif](Demo%20gif.gif)
+![demo gif](demo.gif)
