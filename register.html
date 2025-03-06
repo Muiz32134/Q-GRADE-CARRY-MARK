@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        td[data-tooltip] {
+            cursor: help;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        td[data-tooltip]:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 20px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #333 transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Register</h1>
+        <table>
+            <tr><td class="required">Staff Name:</td><td><input type="text" id="staffname" required></td></tr>
+            <tr><td class="required">Staff ID:</td><td><input type="text" id="staffid" required></td></tr>
+            <tr>
+                <td class="required">Faculty:</td>
+                <td>
+                    <select id="department" required>
+                        <option value="" disabled selected>Select your Faculty</option>
+                        <option value="Education and Social Science">Education and Social Science</option>
+                        <option value="Communication, Visual Art and Computing">Communication, Visual Art and Computing</option>
+                        <option value="Engineering and Life Sciences">Engineering and Life Sciences</option>
+                        <option value="Foundation and General Studies">Foundation and General Studies</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="required">Title:</td>
+                <td>
+                    <select id="title" required>
+                        <option value="" disabled selected>Select Your Title</option>
+                        <option value="Prof">Prof.</option>
+                        <option value="Doc">Dr.</option>
+                        <option value="Mr">Mr.</option>
+                        <option value="Mrs">Mrs.</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td class="required">Email:</td><td><input type="email" id="email" required></td></tr>
+            <tr><td class="required">Password:</td><td><input type="password" id="password" required></td></tr>
+            <tr>
+                <td class="required" 
+                    data-tooltip="Please contact admin for the secret password"
+                    style="position: relative;">
+                    Secret Password:
+                    <span class="tooltip">Please contact admin for the secret password</span>
+                </td>
+                <td>
+                    <input type="password" 
+                           id="secretpassword" 
+                           required 
+                           style="background-color: #ffffff;">
+                </td>
+            </tr>
+        </table>
+        <button type="button" onclick="register()">Register</button>
+        <button type="button" onclick="logbutton()">Login</button>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+</body>
+</html>

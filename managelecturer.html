@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Lecturers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .action-buttons button {
+            margin: 0;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+        .search-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-input, .department-filter {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .role-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .role-select:hover {
+            border-color: #666;
+        }
+
+        .role-select option {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Manage Lecturers</h2>
+        <div class="search-controls">
+            <div>
+                <span class="filter-label">Search Lecturer:</span>
+                <input type="text" 
+                       id="lecturer-search" 
+                       class="search-input" 
+                       placeholder="Search by name..."
+                       oninput="filterLecturers()">
+            </div>
+            <div>
+                <span class="filter-label">Filter by Department:</span>
+                <select id="department-filter" class="department-filter" onchange="filterLecturers()">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Title</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="lecturer-table-body">
+                <!-- Data will be inserted dynamically -->
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button><a href="addlecturer.html">Add New Lecturer</a></button>
+            <button><a href="homepageadmin.html">Back</a></button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        // Fetch lecturers from Firebase and display them
+        firebase.database().ref('users').once('value').then(function(snapshot) {
+            const users = snapshot.val();
+            const lecturerTableBody = document.getElementById('lecturer-table-body');
+            lecturerTableBody.innerHTML = ''; // Clear existing rows
+            let index = 1;
+
+            // Initialize department filter
+            initializeDepartmentFilter(users);
+
+            for (const userId in users) {
+                const user = users[userId];
+                // Remove role check
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index++}</td>
+                    <td>${user.title || ''}</td>
+                    <td>${user.full_name || ''}</td>
+                    <td>${user.email || ''}</td>
+                    <td>${user.department || ''}</td>
+                    <td>
+                        <select class="role-select" onchange="updateRole('${userId}', this.value)">
+                            <option value="lecturer" ${user.role === 'lecturer' || !user.role ? 'selected' : ''}>Lecturer</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </td>
+                    <td class="action-buttons">
+                        <button onclick="editLecturer('${userId}')" style="background-color: #4CAF50;">✏️</button>
+                        <button onclick="deleteLecturer('${userId}')" style="background-color: #f44336;">🗑️</button>
+                    </td>
+                `;
+                lecturerTableBody.appendChild(row);
+            }
+        }).catch(error => {
+            console.error("Error fetching lecturers:", error);
+            alert("Error loading lecturers: " + error.message);
+        });
+
+        function editLecturer(lecturerId) {
+            window.location.href = `editlecturer.html?id=${lecturerId}`;
+        }
+
+        function deleteLecturer(lecturerId) {
+            if (confirm('Are you sure you want to delete this lecturer? This will also remove all their course registrations.')) {
+                const promises = [
+                    // Delete lecturer record
+                    firebase.database().ref('users/' + lecturerId).remove(),
+                    
+                    // Delete all course registrations
+                    firebase.database().ref('courses').once('value')
+                        .then(snapshot => {
+                            const updates = {};
+                            snapshot.forEach(courseSnap => {
+                                updates[`courses/${courseSnap.key}/lecturers/${lecturerId}`] = null;
+                            });
+                            return firebase.database().ref().update(updates);
+                        })
+                ];
+
+                Promise.all(promises)
+                    .then(() => {
+                        alert('Lecturer deleted successfully.');
+                        window.location.reload();
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting lecturer:', error);
+                        alert('Error: ' + error.message);
+                    });
+            }
+        }
+
+        function initializeDepartmentFilter(users) {
+            const departments = new Set();
+            
+            // Collect all unique departments
+            Object.values(users).forEach(user => {
+                if (user.department) {
+                    departments.add(user.department);
+                }
+            });
+
+            // Populate department filter dropdown
+            const departmentFilter = document.getElementById('department-filter');
+            departments.forEach(department => {
+                const option = document.createElement('option');
+                option.value = department;
+                option.textContent = department;
+                departmentFilter.appendChild(option);
+            });
+        }
+
+        function filterLecturers() {
+            const searchValue = document.getElementById('lecturer-search').value.trim().toLowerCase();
+            const departmentValue = document.getElementById('department-filter').value.toLowerCase();
+            const rows = document.querySelectorAll('#lecturer-table-body tr');
+            
+            rows.forEach(row => {
+                const lecturerName = row.cells[2].textContent.toLowerCase(); // Full name column
+                const department = row.cells[4].textContent.toLowerCase(); // Department column
+                
+                const matchesSearch = !searchValue || lecturerName.includes(searchValue);
+                const matchesDepartment = !departmentValue || department === departmentValue;
+                
+                row.style.display = (matchesSearch && matchesDepartment) ? '' : 'none';
+            });
+        }
+
+        function updateRole(userId, newRole) {
+            if (confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+                firebase.database().ref('users/' + userId).update({
+                    role: newRole
+                }).then(() => {
+                    alert('Role updated successfully!');
+                }).catch(error => {
+                    console.error('Error updating role:', error);
+                    alert('Error updating role: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

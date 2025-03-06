@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 50%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 21.1px;
+        }
+        a {
+            text-decoration: none;
+        }
+        .search-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start; /* Changed from center to better align multiple inputs */
+        }
+
+        .search-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 250px; /* Ensure consistent width */
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .student-link {
+            color: #0066cc;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .student-link:hover {
+            text-decoration: underline;
+            color: #003d7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Student List</h2>
+        <div class="search-controls">
+            <div class="search-group">
+                <div>
+                    <span class="filter-label">Search Course ID:</span>
+                    <input type="text" 
+                           id="course-id-search" 
+                           class="search-input" 
+                           placeholder="Search by course ID..."
+                           oninput="filterStudentList()">
+                </div>
+                <div>
+                    <span class="filter-label">Search Student ID:</span>
+                    <input type="text" 
+                           id="student-id-search" 
+                           class="search-input" 
+                           placeholder="Search by student ID..."
+                           oninput="filterStudentList()">
+                </div>
+                <div>
+                    <span class="filter-label">Search Student Name:</span>
+                    <input type="text" 
+                           id="student-name-search" 
+                           class="search-input" 
+                           placeholder="Search by student name..."
+                           oninput="filterStudentList()">
+                </div>
+            </div>
+        </div>
+        <div id="course-student-lists">
+            <!-- Data will be inserted dynamically -->
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button><a href="homepagelec.html">Back</a></button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        // Fetch user-specific courses from Firebase and display the students registered for those courses
+        firebase.auth().onAuthStateChanged(async function (user) {
+            if (user) {
+                const userId = user.uid;
+                const userRef = firebase.database().ref('users/' + userId + '/registeredCourses');
+                
+                const snapshot = await userRef.once('value');
+                const registeredCourses = snapshot.val();
+                if (!registeredCourses) return; // No courses registered
+
+                const courseStudentLists = document.getElementById('course-student-lists');
+                courseStudentLists.innerHTML = ''; // Clear existing content
+
+                // Fetch all courses in parallel
+                const coursePromises = Object.keys(registeredCourses).map(async (courseId) => {
+                    const courseSnapshot = await firebase.database().ref('courses/' + courseId).once('value');
+                    const course = courseSnapshot.val();
+                    if (!course) return;
+
+                    const courseSection = document.createElement('div');
+                    courseSection.innerHTML = `
+                        <h3>${course.courseName ?? "Unknown Course"} (${course.courseId ?? "N/A"})</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Student Name</th>
+                                    <th>Student ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body-${courseId}">
+                                <!-- Data will be inserted dynamically -->
+                            </tbody>
+                        </table>
+                    `;
+                    courseStudentLists.appendChild(courseSection);
+
+                    // Fetch students
+                    const studentSnapshot = await firebase.database().ref('students').once('value');
+                    const students = studentSnapshot.val();
+                    if (!students) return;
+
+                    const studentTableBody = document.getElementById(`student-table-body-${courseId}`);
+                    studentTableBody.innerHTML = ''; // Clear existing rows
+
+                    let index = 1;
+                    Object.entries(students).forEach(([studentId, student]) => {
+                        if (student.registeredCourses && student.registeredCourses[courseId]) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${index++}</td>
+                                <td>
+                                    <a href="studentprofile.html?id=${studentId}" class="student-link">
+                                        ${student.name}
+                                    </a>
+                                </td>
+                                <td>${student.stdid}</td>
+                            `;
+                            studentTableBody.appendChild(row);
+                        }
+                    });
+                });
+            }
+        });
+
+
+        // Add debouncing to search
+        let searchTimeout;
+        function filterStudentList() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const courseIdSearch = document.getElementById('course-id-search').value.trim().toLowerCase();
+                const studentIdSearch = document.getElementById('student-id-search').value.trim().toLowerCase();
+                const studentNameSearch = document.getElementById('student-name-search').value.trim().toLowerCase();
+                
+                // Get all course sections
+                const courseSections = document.querySelectorAll('#course-student-lists > div');
+                
+                courseSections.forEach(section => {
+                    const courseHeader = section.querySelector('h3').textContent.toLowerCase();
+                    const rows = section.querySelectorAll('tbody tr');
+                    
+                    // Check if course matches search
+                    const courseMatches = !courseIdSearch || courseHeader.includes(courseIdSearch);
+                    
+                    // Show/hide entire section based on course search
+                    section.style.display = courseMatches ? '' : 'none';
+                    
+                    if (courseMatches) {
+                        rows.forEach(row => {
+                            const studentName = row.cells[1].textContent.toLowerCase();
+                            const studentId = row.cells[2].textContent.toLowerCase();
+                            
+                            const matchesId = !studentIdSearch || studentId.includes(studentIdSearch);
+                            const matchesName = !studentNameSearch || studentName.includes(studentNameSearch);
+                            
+                            row.style.display = (matchesId && matchesName) ? '' : 'none';
+                        });
+                    }
+                });
+            }, 300);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+body{
+    background-color: #ECE8E8;
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+}
+
+h1{
+    text-align: center;
+    font-size: 50px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+table{
+    font-size: 20px;
+    font-family: Nixie One;
+    font-weight: 200;
+    border-collapse: collapse; /* Ensures borders don't double up */
+}
+
+td, th {
+    border: 3px solid black; /* Adjust thickness as needed */
+    padding: 10px; /* Adds spacing inside the cell */
+    word-wrap: break-word;
+}
+
+button {
+    background-color: #4CAF50;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.action-buttons {
+    height: 50px;
+}

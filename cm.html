@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+            
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th.matric-number, td.matric-number {
+            width: 150px; /* Adjust width as needed */
+        }
+        th.student-name, td.student-name {
+            width: 200px; /* Adjust width as needed */
+        }
+        input, select {
+            width: 70%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+        .disabled {
+            color: white;
+        }
+        .hidden {
+            visibility: hidden;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Carry Mark</h2>
+        <p>Course Name: <span id="coursename"></span></p>
+        <p>Course Code: <span id="courseid"></span></p>
+        <p>Semester: <span id="Semester"></span></p>
+        <br>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <tr>
+                    <td colspan="2" rowspan="3"></td>
+                    <th colspan="2" rowspan="2">ASSESSMENT</th>
+                    <th colspan="8">FORMATIVE</th>
+                    <th colspan="4">SUMMATIVE</th>
+                    <th rowspan="5">TOTAL MARK</th>
+                    <th rowspan="5">GRADE</th>
+                    <th rowspan="5">POINT</th>
+                    <th rowspan="5">PASS/<br>FAILED</th>
+                </tr>
+                <tr>
+                    <th class="formative-name-1" id="formative-name-1">-</th>
+                    <th class="formative-name-2" id="formative-name-2">-</th>
+                    <th class="formative-name-3" id="formative-name-3">-</th>
+                    <th class="formative-name-4" id="formative-name-4">-</th>
+                    <th class="formative-name-5" id="formative-name-5">-</th>
+                    <th class="formative-name-6" id="formative-name-6">-</th>
+                    <th class="formative-name-7" colspan="2">SUBTOTAL</th>
+                    <th class="summative-name-1"><span id="summative-name-1"></span></th>
+                    <th class="summative-name-2"><span id="summative-name-2"></span></th>
+                    <th class="summative-name-3" colspan="2">SUBTOTAL</th>
+                </tr>
+                <tr>
+                    <th colspan="2">TOTAL MARKS</th>
+                    <td id="formative-marks-1">0</td>
+                    <td id="formative-marks-2">0</td>
+                    <td id="formative-marks-3">0</td>
+                    <td id="formative-marks-4">0</td>
+                    <td id="formative-marks-5">0</td>
+                    <td id="formative-marks-6">0</td>
+                    <td>Marks</td>
+                    <td>%</td>
+                    <td id="summative-marks-1">0</td>
+                    <td id="summative-marks-2">0</td>
+                    <td>Marks</td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <th rowspan="2">NO.</th>
+                    <th rowspan="2" class="matric-number">MATRIC NUMBER</th>
+                    <th colspan="2">WEIGHTAGE(%)</th>
+                    <td id="formative-weightage-1">0</td>
+                    <td id="formative-weightage-2">0</td>
+                    <td id="formative-weightage-3">0</td>
+                    <td id="formative-weightage-4">0</td>
+                    <td id="formative-weightage-5">0</td>
+                    <td id="formative-weightage-6">0</td>
+                    <td id="total-marks-1">0</td>
+                    <td id="total-weightage-1">0</td>
+                    <td id="summative-weightage-1">0</td>
+                    <td id="summative-weightage-2">0</td>
+                    <td id="total-marks-2">0</td>
+                    <td id="total-weightage-2">0</td>
+                    
+                </tr>
+                <tr>
+                    <th class="student-name">STUDENT NAME</th>
+                    <th>PROG CODE</th>
+                    <th colspan="12">SCORE</th>
+
+                </tr>
+                <tbody id="student-table-body">
+                    <tr>
+                        <td>1</td>
+                        <td class="matric-number" id="student-id"></td>
+                        <td class="student-name" id="student-name"></td>
+                        <td id="student-code"></td>
+                        <td><span id="formative-1"></span></td>
+                        <td><span id="formative-2"></span></td>
+                        <td><span id="formative-3"></span></td>
+                        <td><span id="formative-4"></span></td>
+                        <td><span id="formative-5"></span></td>
+                        <td><span id="formative-6"></span></td>
+                        <td class="formative-subtotal" id="formative-subtotal">0</td>
+                        <td class="formative-percent" id="formative-percent">0</td>
+                        <td><span id="summative-1"></span></td>
+                        <td><span id="summative-2"></span></td>
+                        <td class="summative-subtotal" id="summative-subtotal">0</td>
+                        <td class="summative-percent" id="summative-percent">0</td>
+                        <td class="total-mark" id="total-mark">0</td>
+                        <td class="grade" id="grade">-</td>
+                        <td class="point" id="point">0</td>
+                        <td class="status" id="status">-</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button type="button" onclick="goBack()">Back</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script src="calculationstd.js"></script>
+    <script>
+        function goBack() {
+            window.location.href = "ccm.html";
+        }
+    </script>
+</body>
+
+</html>

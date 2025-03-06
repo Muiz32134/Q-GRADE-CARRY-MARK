@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Course</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 20px;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        td ,th{
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Add Course</h1>
+        <form id="addCourseForm">
+            <table>
+                <tr><td class="required">Course Name</td><td><input type="text" id="coursename" required></td></tr>
+                <tr><td class="required">Course ID</td><td><input type="text" id="courseid" required></td></tr>
+                <tr><td class="required">Semester</td><td><input type="text" name="semester" id="semester"></td></tr>
+                <tr><td class="required">Faculty</td><td><input type="text" name="faculty" id="faculty"></td></tr>
+            </table>
+            <table>
+                <tr>
+                    <th>Grade</th>
+                    <th>Mark</th>
+                    <th>Pointer</th>
+                </tr>
+                <tr>
+                    <td>A+</td>
+                    <td><input type="number" name="gred" id="gred-a-plus" value="89.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-a-plus"value="4.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td><input type="number" name="gred" id="gred-a" value="79.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-a" value="4.00" step="00.1"></td>
+                </tr>
+                <tr>
+                    <td>A-</td>
+                    <td><input type="number" name="gred" id="gred-a-minus" value="74.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-a-minus" value="3.67" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>B+</td>
+                    <td><input type="number" name="gred" id="gred-b-plus" value="69.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-b-plus" value="3.33" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td><input type="number" name="gred" id="gred-b" value="64.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-b" value="3.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>B-</td>
+                    <td><input type="number" name="gred" id="gred-b-minus" value="59.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-b-minus" value="2.67" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>C+</td>
+                    <td><input type="number" name="gred" id="gred-c-plus" value="54.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-c-plus" value="2.33" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td><input type="number" name="gred" id="gred-c" value="49.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-c" value="2.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>C-</td>
+                    <td><input type="number" name="gred" id="gred-c-minus" value="46.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-c-minus" value="1.67" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>D+</td>
+                    <td><input type="number" name="gred" id="gred-d-plus" value="43.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-d-plus" value="1.33" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td><input type="number" name="gred" id="gred-d" value="39.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-d" value="1.00" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>E</td>
+                    <td><input type="number" name="gred" id="gred-e" value="29.5" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-e" value="0.66" step="0.01"></td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td><input type="number" name="gred" id="gred-f" value="0" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-f" value="0" step="0.1"></td>
+                </tr>
+                <tr>
+                    <td>Y</td>
+                    <td><input type="number" name="gred" id="gred-y" value="-1" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-y value="0" step="0.1""></td>
+                </tr>
+                <tr>
+                    <td>Z</td>
+                    <td><input type="number" name="gred" id="gred-z" value="-2" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-z" value="0" step="0.1"></td>
+                </tr>
+                <tr>
+                    <td>IP</td>
+                    <td><input type="number" name="gred" id="gred-ip" value="-3" step="0.1"></td>
+                    <td><input type="number" name="pointer" id="pointer-ip" value="0" step="0.1"></td>
+                </tr>
+            </table> 
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="addCourse()">Add Course</button>
+                <button type="button" onclick="window.location.href='managecourse.html'">Back</button>
+            </div>
+        </form>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        function addCourse() {
+            const courseName = document.getElementById("coursename").value;
+            const courseId = document.getElementById("courseid").value;
+            const semester = document.getElementById("semester").value;
+            const faculty = document.getElementById("faculty").value;
+            const grades = {
+                "A+": { mark: document.getElementById("gred-a-plus").value, pointer: document.getElementById("pointer-a-plus").value },
+                "A": { mark: document.getElementById("gred-a").value, pointer: document.getElementById("pointer-a").value },
+                "A-": { mark: document.getElementById("gred-a-minus").value, pointer: document.getElementById("pointer-a-minus").value },
+                "B+": { mark: document.getElementById("gred-b-plus").value, pointer: document.getElementById("pointer-b-plus").value },
+                "B": { mark: document.getElementById("gred-b").value, pointer: document.getElementById("pointer-b").value },
+                "B-": { mark: document.getElementById("gred-b-minus").value, pointer: document.getElementById("pointer-b-minus").value },
+                "C+": { mark: document.getElementById("gred-c-plus").value, pointer: document.getElementById("pointer-c-plus").value },
+                "C": { mark: document.getElementById("gred-c").value, pointer: document.getElementById("pointer-c").value },
+                "C-": { mark: document.getElementById("gred-c-minus").value, pointer: document.getElementById("pointer-c-minus").value },
+                "D+": { mark: document.getElementById("gred-d-plus").value, pointer: document.getElementById("pointer-d-plus").value },
+                "D": { mark: document.getElementById("gred-d").value, pointer: document.getElementById("pointer-d").value },
+                "E": { mark: document.getElementById("gred-e").value, pointer: document.getElementById("pointer-e").value },
+                "F": { mark: document.getElementById("gred-f").value, pointer: document.getElementById("pointer-f").value },
+                "Y": { mark: document.getElementById("gred-y").value, pointer: document.getElementById("pointer-y").value },
+                "Z": { mark: document.getElementById("gred-z").value, pointer: document.getElementById("pointer-z").value },
+                "IP": { mark: document.getElementById("gred-ip").value, pointer: document.getElementById("pointer-ip").value }
+            };
+
+            if (!validate_field(courseName) || !validate_field(courseId)) {
+                alert("Please fill in all fields correctly.");
+                return;
+            }
+
+            const database_ref = firebase.database().ref('courses/' + courseId);
+            const course_data = {
+                courseName: courseName,
+                courseId: courseId,
+                semester: semester,
+                faculty: faculty,
+                grades: grades
+            };
+
+            database_ref.set(course_data)
+                .then(() => {
+                    alert("Course Added Successfully!");
+                })
+                .catch((error) => {
+                    console.error("Error adding course:", error);
+                    alert(error.message);
+                });
+        }
+
+        function validate_field(field) {
+            return field && field.trim().length > 0;
+        }
+    </script>
+</body>
+</html>

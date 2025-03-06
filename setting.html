@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Setting</h1>
+        <h2>Change Information</h2>
+        <form>
+            <table>
+                <tr>
+                    <td class="required">Name</td>
+                    <td><input type="text" name="name" id="name" required></td>
+                </tr>
+                <tr>
+                    <td class="required">Faculty</td>
+                    <td>
+                        <select id="department" required>
+                            <option value="" disabled selected>Select your Faculty</option>
+                            <option value="Education and Social Science">Education and Social Science</option>
+                            <option value="Communication, Visual Art and Computing">Communication, Visual Art and Computing</option>
+                            <option value="Engineering and Life Sciences">Engineering and Life Sciences</option>
+                            <option value="Foundation and General Studies">Foundation and General Studies</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="required">Email</td>
+                    <td><input type="email" name="email" id="email" required></td>
+                </tr>
+                <tr>
+                    <td>Old Password</td>
+                    <td><input type="password" id="old-password" required></td>
+                </tr>
+                <tr>
+                    <td>New Password</td>
+                    <td><input type="password" id="new-password"></td>
+                </tr>
+                
+            </table>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button type="button" id="update-btn">Update Info</button>
+                <button type="button" onclick="window.location.href='homepagelec.html'">Back</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // Fetch user data and fill input fields
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const userId = user.uid;
+                const database_ref = firebase.database().ref('users/' + userId);
+
+                database_ref.once('value').then(function(snapshot) {
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('name').value = userData.full_name || "";
+                        document.getElementById('department').value = userData.department || "";
+                        document.getElementById('email').value = userData.email || "";
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching user data:", error);
+                });
+            }
+        });
+
+        // Update user information and password in Firebase
+        function updateInfo() {
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                alert("User not signed in!");
+                return;
+            }
+
+            const userId = user.uid;
+            const database_ref = firebase.database().ref('users/' + userId);
+
+            const updatedData = {
+                full_name: document.getElementById('name').value,
+                department: document.getElementById('department').value,
+                email: document.getElementById('email').value
+            };
+
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            // Check if old password and new password are empty
+            if (oldPassword && newPassword) {
+                // Reauthenticate user before updating password
+                const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPassword);
+                
+                user.reauthenticateWithCredential(credential).then(function() {
+                    // Update password if new password is provided
+                    user.updatePassword(newPassword).then(() => {
+                        alert("Password updated successfully!");
+                    }).catch((error) => {
+                        console.error("Error updating password:", error);
+                        alert("Failed to update password.");
+                    });
+                }).catch((error) => {
+                    console.error("Reauthentication failed:", error);
+                    alert("Old password is incorrect.");
+                });
+            } else {
+                console.log("Old password and new password are empty. Skipping password update.");
+            }
+
+            // Update user info in Firebase Realtime Database
+            database_ref.update(updatedData)
+                .then(() => alert("Information updated successfully!"))
+                .catch((error) => console.error("Update failed:", error));
+        }
+
+        // Attach event listeners to buttons
+        document.getElementById('update-btn').addEventListener('click', updateInfo);
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1 style="margin-bottom: 10px;">Register</h1>
+        <table>
+            <tr><td class="required">Name</td><td><input type="text" id="name" required></td></tr>
+            <tr><td class="required">Student ID</td><td><input type="text" id="stdid" required></td></tr>
+            <tr><td class="required">Email</td><td><input type="email" name="email" id="email"></td></tr>
+            <tr><td class="required">Programme Code</td><td><input type="text" name="code" id="code"></td></tr>
+            <tr><td class="required">Password</td><td><input type="password" id="password" required></td></tr>
+        </table>
+        <button type="button" onclick="registerStudent()">Register</button>
+        <button type="button" onclick="logbutton()">Login</button>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        function registerStudent() {
+            const name = document.getElementById("name").value;
+            const id = document.getElementById("stdid").value;
+            const email = document.getElementById("email").value;
+            const programme = document.getElementById("code").value;
+            const password = document.getElementById("password").value;
+
+            if (!validate_field(name) || !validate_field(id) || !validate_field(programme) || !validate_password(password) || !validate_field(email)) {
+                alert("Please fill in all fields correctly.");
+                return;
+            }
+
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    const userId = user.uid;
+                    const database_ref = firebase.database().ref('students/' + userId);
+                    const student_data = {
+                        name: name,
+                        stdid: id,
+                        email: email,
+                        code: programme
+                    };
+
+                    return database_ref.set(student_data);
+                })
+                .then(() => {
+                    alert("Student Registered Successfully!");
+                })
+                .catch((error) => {
+                    console.error("Error registering student:", error);
+                    alert(error.message);
+                });
+        }
+
+        function validate_field(field) {
+            return field && field.trim().length > 0;
+        }
+
+        function validate_password(password) {
+            return password.length >= 6;
+        }
+    </script>
+</body>
+</html>

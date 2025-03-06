@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Performance</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 30px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+        .search-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-input, .faculty-filter {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .search-input {
+            /* ...existing styles... */
+            margin-bottom: 10px;  /* Add space between search inputs */
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Course Performance</h2>
+        <div class="search-controls">
+            <div class="search-group">
+                <div>
+                    <span class="filter-label">Search Course ID:</span>
+                    <input type="text" 
+                           id="course-id-search" 
+                           class="search-input" 
+                           placeholder="Search by course ID..."
+                           oninput="filterCourses()">
+                </div>
+                <div>
+                    <span class="filter-label">Search Course Name:</span>
+                    <input type="text" 
+                           id="course-search" 
+                           class="search-input" 
+                           placeholder="Search by course name..."
+                           oninput="filterCourses()">
+                </div>
+            </div>
+            <div>
+                <span class="filter-label">Filter by Faculty:</span>
+                <select id="faculty-filter" class="faculty-filter" onchange="filterCourses()">
+                    <option value="">All Faculties</option>
+                </select>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                    <th>Faculty</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="course-table-body">
+                <!-- Data will be inserted dynamically -->
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button><a href="addcourse.html">Add New Course</a></button>
+            <button><a href="homepageadmin.html">Back</a></button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        // Fetch courses from Firebase and display them
+        firebase.database().ref('courses').once('value').then(function(snapshot) {
+            const courses = snapshot.val();
+            const courseTableBody = document.getElementById('course-table-body');
+            courseTableBody.innerHTML = ''; // Clear existing rows
+
+            // Initialize faculty filter
+            initializeFacultyFilter(courses);
+
+            for (const courseId in courses) {
+                if (courses.hasOwnProperty(courseId)) {
+                    const course = courses[courseId];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${course.courseId}</td>
+                        <td>${course.courseName}</td>
+                        <td>${course.faculty || 'Not assigned'}</td>
+                        <td>
+                            <button onclick="viewResults('${courseId}')" style="background-color: #F5DBFC;">View Course Performance</button>
+                        </td>
+                    `;
+                    courseTableBody.appendChild(row);
+                }
+            }
+        });
+
+        function viewResults(courseId) {
+            window.location.href = `finalresultadmin.html?courseId=${courseId}`;
+        }
+
+        function initializeFacultyFilter(courses) {
+            const faculties = new Set();
+            
+            // Collect all unique faculties
+            Object.values(courses).forEach(course => {
+                if (course.faculty) {
+                    faculties.add(course.faculty);
+                }
+            });
+
+            // Populate faculty filter dropdown
+            const facultyFilter = document.getElementById('faculty-filter');
+            faculties.forEach(faculty => {
+                const option = document.createElement('option');
+                option.value = faculty;
+                option.textContent = faculty;
+                facultyFilter.appendChild(option);
+            });
+        }
+
+        function filterCourses() {
+            const courseIdSearch = document.getElementById('course-id-search').value.trim().toLowerCase();
+            const courseNameSearch = document.getElementById('course-search').value.trim().toLowerCase();
+            const facultyValue = document.getElementById('faculty-filter').value.toLowerCase();
+            const rows = document.querySelectorAll('#course-table-body tr');
+            
+            rows.forEach(row => {
+                const courseId = row.cells[0].textContent.toLowerCase();
+                const courseName = row.cells[1].textContent.toLowerCase();
+                const faculty = row.cells[2].textContent.toLowerCase();
+                
+                const matchesCourseId = !courseIdSearch || courseId.includes(courseIdSearch);
+                const matchesCourseName = !courseNameSearch || courseName.includes(courseNameSearch);
+                const matchesFaculty = !facultyValue || faculty === facultyValue;
+                
+                row.style.display = (matchesCourseId && matchesCourseName && matchesFaculty) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

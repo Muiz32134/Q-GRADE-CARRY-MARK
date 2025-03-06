@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Lecturer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Update Lecturer Info</h1>
+        <form>
+            <table>
+                <tr>
+                    <td class="required">Title:</td>
+                    <td>
+                        <select id="title" required>
+                            <option value="" disabled selected>Select Your Title</option>
+                            <option value="Prof">Prof.</option>
+                            <option value="Doc">Dr.</option>
+                            <option value="Mr">Mr.</option>
+                            <option value="Mrs">Mrs.</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td class="required">Full Name</td><td><input type="text" id="full_name" required></td></tr>
+                <tr><td class="required">Email</td><td><input type="email" id="email" required></td></tr>
+                <tr><td class="required">Department</td><td><input type="text" id="department" required></td></tr>
+            </table>
+            <button type="button" id="update-btn">Update</button>
+            <button type="button" onclick="goBack()">Back</button>
+        </form>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // Get lecturer ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const lecturerId = urlParams.get('id');
+
+        if (!lecturerId) {
+            alert("No lecturer ID provided!");
+            window.location.href = 'managelecturer.html';
+        }
+
+        // Fetch lecturer data and fill input fields
+        firebase.database().ref('users/' + lecturerId).once('value')
+            .then(function(snapshot) {
+                const lecturerData = snapshot.val();
+                if (lecturerData) {
+                    document.getElementById('title').value = lecturerData.title || '';
+                    document.getElementById('full_name').value = lecturerData.full_name || '';
+                    document.getElementById('email').value = lecturerData.email || '';
+                    document.getElementById('department').value = lecturerData.department || '';
+                } else {
+                    alert("Lecturer not found!");
+                    window.location.href = 'managelecturer.html';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching lecturer data:", error);
+                alert("Error loading lecturer data: " + error.message);
+            });
+
+        // Update lecturer information
+        function updateInfo() {
+            if (!lecturerId) return;
+
+            const updatedData = {
+                title: document.getElementById('title').value,
+                full_name: document.getElementById('full_name').value,
+                email: document.getElementById('email').value,
+                department: document.getElementById('department').value
+            };
+
+            // Validate required fields
+            if (!updatedData.title || !updatedData.full_name || !updatedData.email || !updatedData.department) {
+                alert("Please fill in all required fields!");
+                return;
+            }
+
+            // Update lecturer info in Firebase
+            firebase.database().ref('users/' + lecturerId).update(updatedData)
+                .then(() => {
+                    alert("Lecturer information updated successfully!");
+                    window.location.href = "managelecturer.html";
+                })
+                .catch((error) => {
+                    console.error("Update failed:", error);
+                    alert("Error updating lecturer: " + error.message);
+                });
+        }
+
+        function goBack() {
+            window.location.href = "managelecturer.html";
+        }
+
+        // Attach event listener to button
+        document.getElementById('update-btn').addEventListener('click', updateInfo);
+    </script>
+</body>
+</html>

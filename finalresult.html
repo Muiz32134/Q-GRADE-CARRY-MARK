@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+            
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 10px;
+            font-weight: bold;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th.matric-number, td.matric-number {
+            width: 150px; /* Adjust width as needed */
+        }
+        th.student-name, td.student-name {
+            width: 200px; /* Adjust width as needed */
+        }
+        input, select {
+            width: 70%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+        .disabled {
+            color: white;
+        }
+        .table{
+            border-color: black;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .small {
+            width: 50%;
+        }
+        .chart-container {
+            width: 50%;
+            height: 510px;
+            background-color: white; /* Set background color to white */
+            border: 5px solid black; /* Set border color to yellow */
+        }
+        @media print {
+            button, .no-print {
+                display: none !important;
+            }
+            h1 {
+                display: inline-block;
+                margin: 0;
+                text-wrap: wrap;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                padding: 10px;
+            }
+            table {
+                color: black !important;
+                page-break-inside: avoid;
+            }
+            /* Modify the flex container for printing */
+            div[style*="display: flex"] {
+                display: block !important;
+            }
+            .small {
+                width: 100% !important;
+                margin-bottom: 20px;
+            }
+            .chart-container {
+                width: 90% !important; /* Reduced from 100% to 90% */
+                margin: 20px auto !important; /* Center the chart */
+                height: 400px !important;
+                border: 1px solid black;
+                page-break-before: auto;
+                page-break-after: auto;
+            }
+            /* Ensure chart is centered */
+            canvas {
+                max-width: 100%;
+                margin: 0 auto;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Calculation</h2>
+        <p>Faculty: <span id="Faculty"></span></p>
+        <p>Course Name: <span id="coursename"></span></p>
+        <p>Course Code: <span id="courseid"></span></p>
+        <p>Semester: <span id="semester"></span></p>
+        <p>Lecturer: <span id="title"></span> <span id="Lecturer"></span></p>
+        <p>Number of students: <span id="stdno"></span></p>
+        <br>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Matric Number</th>
+                        <th>Student Name</th>
+                        <th>Programme Code</th>
+                        <th>Total Mark</th>
+                        <th>Grade</th>
+                        <th>Pointer</th>
+                        <th>Pass/Failed</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table-body">
+                    <!-- Results will be populated here -->
+                </tbody>
+            </table>
+            <div style="display: flex;">
+                <table class="small">
+                    <tr>
+                        <th>Gred</th>
+                        <th>Mark</th>
+                        <th>Points</th>
+                        <th>Qty</th>
+                        <th>%</th>
+                    </tr>
+                    <tr>
+                        <td>A+</td>
+                        <td id="gred-A-1"></td>
+                        <td>4.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>A</td>
+                        <td id="gred-A-2"></td>
+                        <td>4.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>A-</td>
+                        <td id="gred-A-3"></td>
+                        <td>3.67</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>B+</td>
+                        <td id="gred-B-1"></td>
+                        <td>3.33</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td id="gred-B-2"></td>
+                        <td>3.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>B-</td>
+                        <td id="gred-B-3"></td>
+                        <td>2.67</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>C+</</td>
+                        <td id="gred-C-1"></td>
+                        <td>2.33</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td id="gred-C-2"></td>
+                        <td>2.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>C-</td>
+                        <td id="gred-C-3"></td>
+                        <td>1.67</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>D+</td>
+                        <td id="gred-D-1"></td>
+                        <td>1.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td id="gred-D-2"></td>
+                        <td>0.66</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>E</td>
+                        <td id="gred-E-1"></td>
+                        <td>0.66</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>F</td>
+                        <td id="gred-F-1"></td>
+                        <td>0.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Y</td>
+                        <td id="gred-Y-1"></td>
+                        <td>0.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>Z</td>
+                        <td id="gred-Z-1"></td>
+                        <td>0.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>IP</td>
+                        <td id="gred-IP-1"></td>
+                        <td>0.00</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr style="font-weight: bold; border-top: 2px solid #ccc;">
+                        <td colspan="3">Total</td>
+                        <td id="total-qty">0</td>
+                        <td id="total-percentage">0%</td>
+                    </tr>
+                </table>
+                <div class="chart-container">
+                    <canvas id="gradeChart"></canvas>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button><a href="calculation.html">Back</a></button>
+                <button>Save</button>
+                <button><a href="homepagelec.html">Save and Continue</a></button>
+                <button onclick="printResults()">Print Results</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+
+        if (!courseId) {
+            alert("No course ID provided!");
+            window.location.href = 'homecalc.html';
+        }
+
+        // Update navigation buttons
+        document.querySelector('a[href="calculation.html"]').href = `calculation.html?courseId=${courseId}`;
+        document.querySelector('a[href="homepagelec.html"]').href = `homepagelec.html?courseId=${courseId}`;
+
+        // Initialize chart
+        const ctx = document.getElementById('gradeChart').getContext('2d');
+        const gradeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-','D+', 'D','E', 'F', 'Y', 'Z', 'IP'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(199, 199, 199, 0.2)',
+                        'rgba(199, 199, 199, 0.2)',
+                        'rgba(83, 102, 255, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(199, 199, 199, 1)',
+                        'rgba(83, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Students',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Grade',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateMarkColumn(courseId) {
+            firebase.database().ref(`courses/${courseId}/grades`).once('value')
+                .then((snapshot) => {
+                    const gradesData = snapshot.val();
+
+                    if (gradesData) {
+                        // Map grade names to their respective cell IDs
+                        const gradeMap = {
+                            'A+': 'gred-A-1',
+                            'A': 'gred-A-2',
+                            'A-': 'gred-A-3',
+                            'B+': 'gred-B-1',
+                            'B': 'gred-B-2',
+                            'B-': 'gred-B-3',
+                            'C+': 'gred-C-1',
+                            'C': 'gred-C-2',
+                            'C-': 'gred-C-3',
+                            'D+': 'gred-D-1',
+                            'D': 'gred-D-2',
+                            'E': 'gred-E-1',
+                            'F': 'gred-F-1',
+                            'Y': 'gred-Y-1',
+                            'Z': 'gred-Z-1',
+                            'IP': 'gred-IP-1'
+                        };
+
+                        // Update each grade's mark
+                        Object.entries(gradesData).forEach(([grade, details]) => {
+                            const cellId = gradeMap[grade];
+                            if (cellId) {
+                                const cell = document.getElementById(cellId);
+                                if (cell && details.mark) {
+                                    cell.textContent = details.mark;
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating marks column:", error);
+                });
+        }
+
+        // Single Firebase auth listener
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userId = user.uid;
+            Promise.all([
+                firebase.database().ref('users/' + userId).once('value'),
+                firebase.database().ref('courses/' + courseId).once('value'),
+                firebase.database().ref('students/').once('value'),
+                firebase.database().ref(`calculations/${courseId}`).once('value')
+            ])
+            .then(([userSnap, courseSnap, studentsSnap, calcSnap]) => {
+                // Load basic info
+                const userData = userSnap.val();
+                if (userData) {
+                    document.getElementById('Lecturer').innerText = userData.full_name || '';
+                    document.getElementById('Faculty').innerText = userData.department || '';
+                    document.getElementById('title').innerText = userData.title || '';
+                }
+
+                const courseData = courseSnap.val();
+                if (courseData) {
+                    document.getElementById('coursename').innerText = courseData.courseName || '';
+                    document.getElementById('courseid').innerText = courseData.courseId || '';
+                    document.getElementById('semester').innerText = courseData.semester || '';
+                    
+                    // Update mark column using the course ID
+                    updateMarkColumn(courseId);
+                }
+
+                // Get marking scheme from course data and update grade table
+                if (courseData && courseData.markingScheme) {
+                    const gradeTable = document.querySelector('.small');
+                    const rows = gradeTable.querySelectorAll('tr');
+                    
+                    // Map of grade names to their rows
+                    const gradeRows = {
+                        'A+': rows[1],
+                        'A': rows[2],
+                        'A-': rows[3],
+                        'B+': rows[4],
+                        'B': rows[5],
+                        'B-': rows[6],
+                        'C+': rows[7],
+                        'C': rows[8],
+                        'C-': rows[9],
+                        'D+': rows[10],
+                        'D': rows[11],
+                        'E': rows[12],
+                        'F': rows[12],
+                        'Y': rows[13],
+                        'Z': rows[14],
+                        'IP': rows[15]
+                    };
+
+                    // Update marks for each grade
+                    Object.entries(courseData.markingScheme).forEach(([grade, criteria]) => {
+                        const row = gradeRows[grade.replace('_PLUS', '+').replace('_MINUS', '-')];
+                        if (row) {
+                            // Update mark range cell
+                            const markCell = row.cells[1];
+                            markCell.textContent = `${criteria.min}-${criteria.max || criteria.min}`;
+                            
+                            // Update points cell if available
+                            const pointCell = row.cells[2];
+                            if (pointCell && criteria.point) {
+                                pointCell.textContent = criteria.point.toFixed(2);
+                            }
+                        }
+                    });
+                }
+
+                // Get grading scheme from course data
+                if (courseData && courseData.grading) {
+                    // Map Firebase grade keys to HTML IDs
+                    const gradeMap = {
+                        'A+': 'gred-A-1',
+                        'A': 'gred-A-2',
+                        'A-': 'gred-A-3',
+                        'B+': 'gred-B-1',
+                        'B': 'gred-B-2',
+                        'B-': 'gred-B-3',
+                        'C+': 'gred-C-1',
+                        'C': 'gred-C-2',
+                        'C-': 'gred-C-3',
+                        'D+': 'gred-D-1',
+                        'D': 'gred-D-2',
+                        'E': 'gred-E-1',
+                        'F': 'gred-F-1',
+                        'Y': 'gred-Y-1',
+                        'Z': 'gred-Z-1',
+                        'IP': 'gred-IP-1'
+                    };
+
+                    // Update each grade range in the table
+                    Object.entries(courseData.grading).forEach(([grade, criteria]) => {
+                        const elementId = gradeMap[grade];
+                        if (elementId) {
+                            const element = document.getElementById(elementId);
+                            if (element) {
+                                // Format the range as min-max
+                                const range = criteria.max ? 
+                                    `${criteria.min}-${criteria.max}` : 
+                                    criteria.min.toString();
+                                element.textContent = range;
+                            }
+                        }
+                    });
+                }
+
+                // Process calculations and students
+                const calculations = calcSnap.val() || {};
+                const students = studentsSnap.val() || {};
+                const tableBody = document.getElementById('results-table-body');
+                tableBody.innerHTML = ''; // Clear existing rows
+                let index = 1;
+
+                for (const studentId in calculations) {
+                    const calcData = calculations[studentId];
+                    let studentData = null;
+
+                    // Find matching student data
+                    Object.values(students).forEach(student => {
+                        if (student.stdid === studentId) {
+                            studentData = student;
+                        }
+                    });
+
+                    if (calcData && studentData) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index++}</td>
+                            <td>${studentId}</td>
+                            <td>${studentData.name || 'N/A'}</td>
+                            <td>${studentData.code || 'N/A'}</td>
+                            <td>${calcData.totalMark || '0'}</td>
+                            <td>${calcData.grade || '-'}</td>
+                            <td>${calcData.point || '0.00'}</td>
+                            <td>${calcData.status || '-'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                }
+
+                // Update the student count
+                document.getElementById('stdno').textContent = Object.keys(calculations).length;
+
+                // Update grade distribution and chart
+                updateGradeDistribution(calculations);
+                updateGradeChart(calculations);
+            })
+            .catch(error => {
+                console.error("Error loading data:", error);
+                alert("Error loading data: " + error.message);
+            });
+        });
+
+        // Helper functions remain the same
+        function updateGradeDistribution(calculations) {
+            const gradeCount = {};
+            const totalStudents = Object.keys(calculations).length;
+
+            // Count grades
+            Object.values(calculations).forEach(calc => {
+                if (calc.grade) {
+                    gradeCount[calc.grade] = (gradeCount[calc.grade] || 0) + 1;
+                }
+            });
+
+            // Update grade table
+            const gradeTable = document.querySelector('.small');
+            const rows = gradeTable.querySelectorAll('tr');
+            let totalQty = 0;
+
+            rows.forEach(row => {
+                const grade = row.cells?.[0]?.textContent;
+                if (grade && gradeCount[grade]) {
+                    const count = gradeCount[grade];
+                    const percentage = ((count / totalStudents) * 100).toFixed(1);
+                    row.cells[3].textContent = count;
+                    row.cells[4].textContent = percentage;
+                    totalQty += count;
+                }
+            });
+
+            // Update totals
+            document.getElementById('total-qty').textContent = totalQty;
+            document.getElementById('total-percentage').textContent = '100';
+        }
+
+        function updateGradeChart(gradeCount) {
+            const grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-','D+','D','E', 'F', 'Y', 'Z', 'IP'];
+            const data = grades.map(grade => gradeCount[grade] || 0);
+
+            gradeChart.data.datasets[0].data = data;
+            gradeChart.update();
+        }
+
+        function printResults() {
+            // Optional: Prepare document for printing
+            const originalTitle = document.title;
+            document.title = `Results - ${document.getElementById('coursename').innerText} - ${document.getElementById('courseid').innerText}`;
+            
+            // Print the document
+            window.print();
+            
+            // Restore original title
+            document.title = originalTitle;
+        }
+    </script>
+</body>
+</html>

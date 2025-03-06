@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 600px;
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-family: nixie one;
+            font-size: 21.1px;
+        }
+        .logout-button, .settings-button {
+            position: absolute;
+            top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-button {
+            right: 20px;
+        }
+        .settings-button {
+            right: 120px;
+        }
+        .logout-button:hover, .settings-button:hover {
+            background-color: #45a049;
+        }
+        .specify{
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            margin-top: 150px;
+            position: absolute;
+            font-size: 50px;
+            height: 70px;
+            margin-left: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="logout-button" onclick="logout()">Logout</button>
+        <button class="settings-button" onclick="window.location.href='settingstd.html'">Settings</button>
+
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+
+        <h1>Welcome, <span id="student-name"></span>(<span id="student-id"></span>)</h1>
+
+
+        <div class="specify">
+            <button onclick="window.location.href='registerstdcourse.html'" style="background-color: #CD9CFE;" >REGISTER COURSE</button>
+            <button onclick="window.location.href='ccm.html'" style="background-color: #FFC368;margin-left: 100px;">COURSE CARRY MARK</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+
+    <script>
+        // Fetch user data from Firebase and display it
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const userId = user.uid;
+                const database_ref = firebase.database().ref('students/' + userId);
+                database_ref.once('value').then(function(snapshot) {
+                    const userData = snapshot.val();
+                    document.getElementById('student-name').innerText = userData.name;
+                    document.getElementById('student-id').innerText = userData.stdid;
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

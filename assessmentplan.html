@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Plan</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 50%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        
+        input, select {
+            width: 80%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        select {
+            width: 107%; /* Increase the width of the title input */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        a{
+            text-decoration: none;
+        }
+        .disabled {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="width: 100%;">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Assessment Plan</h2>
+        <p>Faculty: <span id="Faculty"></span></p>
+        <p>Course Name: <span id="coursename"></span></p>
+        <p>Course Code: <span id="courseid"></span></p>
+        <p>Semester: <span id="semester"></span></p>
+        <p>Lecturer: <span id="title"></span> <span id="Lecturer"></span></p>
+        <table>
+            <!-- Header Row -->
+            <tr>
+                <th rowspan="2">Assessment</th>
+                <td rowspan="2">Assessment Name</td>
+                <td rowspan="2">Marks Allocation</td>
+                <th colspan="3">CLO Marks Distribution</th>
+            </tr>
+            <tr>
+                <th>CLO</th>
+                <th>Marks</th>
+                <th>Weightage</th>
+            </tr>
+    
+            <!-- Rows for Assessment Name, Marks Allocation -->
+            <tr>
+                <td rowspan="42">Formative</td>
+                <td rowspan="7"><input type="text" name="assessment-name-1"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-1" id="marks-allocation-1"></td>
+                <td><input type="number" name="clo-1-1"></td>
+                <td><input type="number" name="marks-1-1" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-1" class="weightage-1" readonly></td>
+            </tr>
+            <!-- Repeat for 3 more blocks of 7 rows -->
+            <!-- Block 2 -->
+            <tr>
+                <td><input type="number" name="clo-1-2"></td>
+                <td><input type="number" name="marks-1-2" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-2" class="weightage-1" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-1-3"></td>
+                <td><input type="number" name="marks-1-3" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-3" class="weightage-1" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-1-4"></td>
+                <td><input type="number" name="marks-1-4" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-4" class="weightage-1" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-1-5"></td>
+                <td><input type="number" name="marks-1-5" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-5" class="weightage-1" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-1-6"></td>
+                <td><input type="number" name="marks-1-6" class="marks-1"></td>
+                <td><input type="number" name="weightage-1-6" class="weightage-1" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-1" readonly></td>
+                <td><input type="number" id="total-weightage-1" readonly ></td>
+            </tr>
+            
+            <!-- Block 3 -->
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-2"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-2" id="marks-allocation-2"></td>
+                <td><input type="number" name="clo-2-1"></td>
+                <td><input type="number" name="marks-2-1" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-1" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-2-2"></td>
+                <td><input type="number" name="marks-2-2" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-2" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-2-3"></td>
+                <td><input type="number" name="marks-2-3" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-3" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-2-4"></td>
+                <td><input type="number" name="marks-2-4" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-4" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-2-5"></td>
+                <td><input type="number" name="marks-2-5" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-5" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-2-6"></td>
+                <td><input type="number" name="marks-2-6" class="marks-2"></td>
+                <td><input type="number" name="weightage-2-6" class="weightage-2" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-2" readonly></td>
+                <td><input type="number" id="total-weightage-2" readonly></td>
+            </tr>
+    
+            <!-- Block 4 -->
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-3"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-3" id="marks-allocation-3"></td>
+                <td><input type="number" name="clo-3-1"></td>
+                <td><input type="number" name="marks-3-1" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-1" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-3-2"></td>
+                <td><input type="number" name="marks-3-2" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-2" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-3-3"></td>
+                <td><input type="number" name="marks-3-3" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-3" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-3-4"></td>
+                <td><input type="number" name="marks-3-4" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-4" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-3-5"></td>
+                <td><input type="number" name="marks-3-5" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-5" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-3-6"></td>
+                <td><input type="number" name="marks-3-6" class="marks-3"></td>
+                <td><input type="number" name="weightage-3-6" class="weightage-3" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-3" readonly></td>
+                <td><input type="number" id="total-weightage-3" readonly></td>
+            </tr>
+    
+            <!-- Block 5 -->
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-4"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-4" id="marks-allocation-4"></td>
+                <td><input type="number" name="clo-4-1"></td>
+                <td><input type="number" name="marks-4-1" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-1" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-4-2"></td>
+                <td><input type="number" name="marks-4-2" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-2" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-4-3"></td>
+                <td><input type="number" name="marks-4-3" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-3" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-4-4"></td>
+                <td><input type="number" name="marks-4-4" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-4" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-4-5"></td>
+                <td><input type="number" name="marks-4-5" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-5" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-4-6"></td>
+                <td><input type="number" name="marks-4-6" class="marks-4"></td>
+                <td><input type="number" name="weightage-4-6" class="weightage-4" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-4" readonly></td>
+                <td><input type="number" id="total-weightage-4" readonly></td>
+            </tr>
+
+            <!-- Block 6 -->
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-5"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-5" id="marks-allocation-5"></td>
+                <td><input type="number" name="clo-5-1"></td>
+                <td><input type="number" name="marks-5-1" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-1" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-5-2"></td>
+                <td><input type="number" name="marks-5-2" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-2" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-5-3"></td>
+                <td><input type="number" name="marks-5-3" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-3" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-5-4"></td>
+                <td><input type="number" name="marks-5-4" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-4" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-5-5"></td>
+                <td><input type="number" name="marks-5-5" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-5" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-5-6"></td>
+                <td><input type="number" name="marks-5-6" class="marks-5"></td>
+                <td><input type="number" name="weightage-5-6" class="weightage-5" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-5" readonly></td>
+                <td><input type="number" id="total-weightage-5" readonly></td>
+            </tr>
+
+            <!-- Block 7 -->
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-6"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-6" id="marks-allocation-6"></td>
+                <td><input type="number" name="clo-6-1"></td>
+                <td><input type="number" name="marks-6-1" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-1" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-6-2"></td>
+                <td><input type="number" name="marks-6-2" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-2" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-6-3"></td>
+                <td><input type="number" name="marks-6-3" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-3" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-6-4"></td>
+                <td><input type="number" name="marks-6-4" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-4" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-6-5"></td>
+                <td><input type="number" name="marks-6-5" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-5" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-6-6"></td>
+                <td><input type="number" name="marks-6-6" class="marks-6"></td>
+                <td><input type="number" name="weightage-6-6" class="weightage-6" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-6" readonly></td>
+                <td><input type="number" id="total-weightage-6" readonly></td>
+            </tr>
+
+            <tr>
+                <td colspan="3">Total Formative(%)</td>
+                <td colspan="3"><input type="number" name="percent-1" id="percent-1"></td>
+            </tr>
+            <tr>
+                <td rowspan="14">Summative</td>
+                <td rowspan="7"><input type="text" name="assessment-name-7"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-7" id="marks-allocation-7"></td>
+                <td><input type="number" name="clo-7-1"></td>
+                <td><input type="number" name="marks-7-1" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-1" class="weightage-7" readonly></td>
+            </tr>
+            <!-- Repeat for 3 more blocks of 7 rows -->
+            <!-- Block 2 -->
+            <tr>
+                <td><input type="number" name="clo-7-2"></td>
+                <td><input type="number" name="marks-7-2" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-2" class="weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-7-3"></td>
+                <td><input type="number" name="marks-7-3" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-3" class="weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-7-4"></td>
+                <td><input type="number" name="marks-7-4" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-4" class="weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-7-5"></td>
+                <td><input type="number" name="marks-7-5" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-5" class="weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-7-6"></td>
+                <td><input type="number" name="marks-7-6" class="marks-7"></td>
+                <td><input type="number" name="weightage-7-6" class="weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-7" readonly ></td>
+                <td><input type="number" id="total-weightage-7" readonly></td>
+            </tr>
+            <tr>
+                <td rowspan="7"><input type="text" name="assessment-name-8"></td>
+                <td rowspan="7"><input type="number" name="marks-allocation-8" id="marks-allocation-8"></td>
+                <td><input type="number" name="clo-8-1"></td>
+                <td><input type="number" name="marks-8-1" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-1" class="weightage-8" readonly></td>
+            </tr>
+            <!-- Repeat for 3 more blocks of 7 rows -->
+            <!-- Block 2 -->
+            <tr>
+                <td><input type="number" name="clo-8-2"></td>
+                <td><input type="number" name="marks-8-2" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-2" class="weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-8-3"></td>
+                <td><input type="number" name="marks-8-3" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-3" class="weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-8-4"></td>
+                <td><input type="number" name="marks-8-4" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-4" class="weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-8-5"></td>
+                <td><input type="number" name="marks-8-5" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-5" class="weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="number" name="clo-8-6"></td>
+                <td><input type="number" name="marks-8-6" class="marks-8"></td>
+                <td><input type="number" name="weightage-8-6" class="weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td><input type="number" id="total-marks-8" readonly></td>
+                <td><input type="number" id="total-weightage-8" readonly></td>
+            </tr>
+            <tr>
+                <td colspan="3">Total Summmative(%)</td>
+                <td colspan="3"><input type="number" name="percent-2" id="percent-2"></td>
+            </tr>
+            <tr>
+                <td colspan="3">Total Percentage(%)</td>
+                <td colspan="3"><input type="number" name="total-percent" id="total-percent"></td>
+            </tr>
+            
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button><a href="homecalc.html">Back</a></button>
+            <button onclick="goSave()">Save</button>
+            <button onclick="goToCalculation()">Save and Continue</button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="plan.js"></script>
+    <script src="register.js"></script>
+    <script>
+        // Fetch course and lecturer data from Firebase and display it
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                const userId = user.uid;
+                const urlParams = new URLSearchParams(window.location.search);
+                const courseId = urlParams.get('courseId');
+
+                // Fetch lecturer data
+                firebase.database().ref('users/' + userId).once('value').then(function(snapshot) {
+                    const userData = snapshot.val();
+                    if (userData) {
+                        document.getElementById('Lecturer').innerText = userData.full_name;
+                        document.getElementById('Faculty').innerText = userData.department;
+                        document.getElementById('title').innerText = userData.title;
+                    } else {
+                        alert("User data not found.");
+                    }
+                }).catch(function(error) {
+                    console.error("Error fetching user data:", error);
+                    alert("Error fetching user data.");
+                });
+
+                // Fetch course data
+                firebase.database().ref('courses/' + courseId).once('value').then(function(snapshot) {
+                    const courseData = snapshot.val();
+                    if (courseData) {
+                        document.getElementById('coursename').innerText = courseData.courseName;
+                        document.getElementById('courseid').innerText = courseData.courseId;
+                        document.getElementById('semester').innerText = courseData.semester;
+                    } else {
+                        alert("Course data not found.");
+                    }
+                }).catch(function(error) {
+                    console.error("Error fetching course data:", error);
+                    alert("Error fetching course data.");
+                });
+
+                // Fetch number of students for this course
+                firebase.database().ref('students').once('value').then(function(snapshot) {
+                    const students = snapshot.val();
+                    let count = 0;
+                    for (const studentId in students) {
+                        if (students[studentId].registeredCourses && students[studentId].registeredCourses[courseId]) {
+                            count++;
+                        }
+                    }
+                    document.getElementById('nostudent').innerText = count;
+                });
+            }
+        });
+
+        // Add this function to your existing scripts
+        function goToCalculation() {
+            saveAssessmentPlan();
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('courseId');
+            alert('Assessment plan saved successfully!');
+            window.location.href = `calculation.html?courseId=${courseId}`;  
+        }
+        // Add this function to your existing scripts
+        function goSave() {
+            saveAssessmentPlan();
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('courseId');
+            alert('Assessment plan saved successfully!');  
+        }
+    </script>
+</body>
+
+</html>

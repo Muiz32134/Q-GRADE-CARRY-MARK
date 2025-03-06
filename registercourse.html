@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Course</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .tables-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .table-section {
+            flex: 1;
+        }
+        table {
+            width: 100%; /* Changed from 50% to 100% */
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        a {
+            text-decoration: none;
+        }
+        /* Add responsive design */
+        @media (max-width: 1200px) {
+            .tables-container {
+                flex-direction: column;
+            }
+        }
+        .search-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .search-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+            margin-bottom: 10px;
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        
+        <div class="search-controls">
+            <div class="search-group">
+                <div>
+                    <span class="filter-label">Search Course ID:</span>
+                    <input type="text" 
+                        id="course-id-search" 
+                        class="search-input" 
+                        placeholder="Search by course ID..."
+                        oninput="filterCourses()">
+                </div>
+                <div>
+                    <span class="filter-label">Search Course Name:</span>
+                    <input type="text" 
+                        id="course-name-search" 
+                        class="search-input" 
+                        placeholder="Search by course name..."
+                        oninput="filterCourses()">
+                </div>
+                <div>
+                    <span class="filter-label">Filter by Faculty:</span>
+                    <select id="faculty-filter" class="search-input" onchange="filterCourses()">
+                        <option value="">All Faculties</option>
+                        <option value="Education and Social Science">Education and Social Science</option>
+                        <option value="Communication, Visual Art and Computing">Communication, Visual Art and Computing</option>
+                        <option value="Engineering and Life Sciences">Engineering and Life Sciences</option>
+                        <option value="Foundation and General Studies">Foundation and General Studies</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="tables-container">
+            <!-- Left table section -->
+            <div class="table-section">
+                <h2>Register Course</h2>
+                <form id="registerCourseForm">
+                    <table>
+                        <tr>
+                            <th>No.</th>
+                            <th>Course Name</th>
+                            <th>Course Code</th>
+                            <th>Faculty</th>
+                            <th>Register</th>
+                        </tr>
+                        <tbody id="course-table-body">
+                            <!-- Data will be inserted dynamically -->
+                        </tbody>
+                    </table>
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                        <button type="button" onclick="window.location.href='homepagelec.html'">Back</button>
+                        <button type="submit">Register Selected Courses</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right table section -->
+            <div class="table-section">
+                <h2>Registered Courses</h2>
+                <table>
+                    <tr>
+                        <th>No.</th>
+                        <th>Course Name</th>
+                        <th>Course Code</th>
+                        <th>Faculty</th>
+                    </tr>
+                    <tbody id="registered-course-table-body">
+                        <!-- Data will be inserted dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        function fetchAndDisplayCourses() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    const userId = user.uid;
+                    
+                    // Get all registered courses by all lecturers first
+                    firebase.database().ref('users').once('value')
+                        .then(function(usersSnapshot) {
+                            const allRegisteredCourses = new Set();
+                            
+                            // Collect all registered courses
+                            usersSnapshot.forEach(userSnap => {
+                                const userData = userSnap.val();
+                                if (userData.registeredCourses) {
+                                    Object.keys(userData.registeredCourses).forEach(courseId => {
+                                        allRegisteredCourses.add(courseId);
+                                    });
+                                }
+                            });
+
+                            // Get current user's registered courses
+                            return firebase.database().ref('users/' + userId + '/registeredCourses').once('value')
+                                .then(function(regSnapshot) {
+                                    const myRegisteredCourses = regSnapshot.val() || {};
+                                    
+                                    // Get all courses
+                                    return firebase.database().ref('courses').once('value')
+                                        .then(function(courseSnapshot) {
+                                            const courses = courseSnapshot.val();
+                                            const courseTableBody = document.getElementById('course-table-body');
+                                            const registeredTableBody = document.getElementById('registered-course-table-body');
+                                            
+                                            courseTableBody.innerHTML = '';
+                                            registeredTableBody.innerHTML = '';
+                                            
+                                            let availableIndex = 1;
+                                            let registeredIndex = 1;
+
+                                            // Display available courses (not registered by any lecturer)
+                                            for (const courseId in courses) {
+                                                const course = courses[courseId];
+                                                
+                                                if (!allRegisteredCourses.has(courseId)) {
+                                                    // Course is not registered by any lecturer
+                                                    const row = document.createElement('tr');
+                                                    row.innerHTML = `
+                                                        <td>${availableIndex++}</td>
+                                                        <td>${course.courseName}</td>
+                                                        <td>${course.courseId}</td>
+                                                        <td>${course.faculty || 'Not assigned'}</td>
+                                                        <td><input type="checkbox" name="register-course" value="${courseId}"></td>
+                                                    `;
+                                                    courseTableBody.appendChild(row);
+                                                } else if (myRegisteredCourses[courseId]) {
+                                                    // Show in registered courses if registered by current lecturer
+                                                    const row = document.createElement('tr');
+                                                    row.innerHTML = `
+                                                        <td>${registeredIndex++}</td>
+                                                        <td>${course.courseName}</td>
+                                                        <td>${course.courseId}</td>
+                                                        <td>${course.faculty || 'Not assigned'}</td>
+                                                    `;
+                                                    registeredTableBody.appendChild(row);
+                                                }
+                                            }
+                                        });
+                                });
+                        });
+                }
+            });
+        }
+
+        // Call this function initially
+        fetchAndDisplayCourses();
+
+        // Update the form submission handler
+        document.getElementById('registerCourseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const selectedCourses = document.querySelectorAll('input[name="register-course"]:checked');
+            const userId = firebase.auth().currentUser.uid;
+
+            // First check if any selected courses are already registered
+            firebase.database().ref('users').once('value')
+                .then(snapshot => {
+                    const registeredCourses = new Set();
+                    
+                    // Collect all registered courses
+                    snapshot.forEach(userSnap => {
+                        const userData = userSnap.val();
+                        if (userData.registeredCourses) {
+                            Object.keys(userData.registeredCourses).forEach(courseId => {
+                                registeredCourses.add(courseId);
+                            });
+                        }
+                    });
+
+                    // Check for conflicts
+                    const conflicts = Array.from(selectedCourses).filter(course => 
+                        registeredCourses.has(course.value)
+                    );
+
+                    if (conflicts.length > 0) {
+                        alert('Some courses are already registered by other lecturers!');
+                        return;
+                    }
+
+                    // If no conflicts, proceed with registration
+                    const database_ref = firebase.database().ref('users/' + userId + '/registeredCourses');
+                    const promises = Array.from(selectedCourses).map(course => {
+                        return database_ref.child(course.value).set(true);
+                    });
+
+                    return Promise.all(promises);
+                })
+                .then(() => {
+                    alert('Courses Registered Successfully!');
+                    fetchAndDisplayCourses();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error registering courses: ' + error.message);
+                });
+        });
+
+        function filterCourses() {
+            const courseIdSearch = document.getElementById('course-id-search').value.trim().toLowerCase();
+            const courseNameSearch = document.getElementById('course-name-search').value.trim().toLowerCase();
+            const facultyFilter = document.getElementById('faculty-filter').value.toLowerCase();
+            
+            const availableRows = document.querySelectorAll('#course-table-body tr');
+            const registeredRows = document.querySelectorAll('#registered-course-table-body tr');
+            
+            function filterRow(row) {
+                const courseId = row.cells[2].textContent.toLowerCase();
+                const courseName = row.cells[1].textContent.toLowerCase();
+                const faculty = row.cells[3].textContent.toLowerCase();
+                
+                const matchesId = !courseIdSearch || courseId.includes(courseIdSearch);
+                const matchesName = !courseNameSearch || courseName.includes(courseNameSearch);
+                const matchesFaculty = !facultyFilter || faculty.includes(facultyFilter);
+                
+                return matchesId && matchesName && matchesFaculty;
+            }
+            
+            // Filter available courses
+            availableRows.forEach(row => {
+                row.style.display = filterRow(row) ? '' : 'none';
+            });
+            
+            // Filter registered courses
+            registeredRows.forEach(row => {
+                row.style.display = filterRow(row) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

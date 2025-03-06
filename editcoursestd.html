@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 800px; /* Increased width for better table display */
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ECE8E8;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin: 20px 0;
+            margin-left: 0;
+            font-size: 21.1px;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        #registered-courses {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #registered-courses th,
+        #registered-courses td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ECE8E8;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background-color: #da190b;
+        }
+
+        #student-info {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        #student-info h3 {
+            margin: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Student Course Management</h1>
+        <div id="student-info">
+            <h3>Student: <span id="student-name"></span> (<span id="student-id"></span>)</h3>
+        </div>
+        <table id="registered-courses">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Course Name</th>
+                    <th>Course Code</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Courses will be populated dynamically -->
+            </tbody>
+        </table>
+        <button type="button" onclick="goBack()">Back</button>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // Add this variable at the top of your script to prevent page reload error
+        let isUnregistering = false;
+
+        // Get student ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('id');
+
+        // Update the window load handler
+        window.onload = function() {
+            if (!studentId && !isUnregistering) {
+                alert("No student ID provided!");
+                window.location.href = 'managestudent.html';
+            }
+        };
+
+        // Fetch student data and fill input fields
+        firebase.database().ref('students/' + studentId).once('value')
+            .then(function(snapshot) {
+                const studentData = snapshot.val();
+                if (studentData) {
+                    document.getElementById('student-name').textContent = studentData.name || '';
+                    document.getElementById('student-id').textContent = studentData.stdid || '';
+                    loadRegisteredCourses();
+                } else {
+                    alert("Student not found!");
+                    window.location.href = 'managestudent.html';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching student data:", error);
+                alert("Error loading student data: " + error.message);
+            });
+
+        function goBack(){
+            window.location.href = "managestudent.html";
+        }
+
+        // Attach event listener to button
+        document.getElementById('update-btn').addEventListener('click', updateInfo);
+
+        // Update the loadRegisteredCourses function to handle empty state
+        function loadRegisteredCourses() {
+            if (!studentId) return;
+
+            return firebase.database().ref('students/' + studentId + '/registeredCourses').once('value')
+                .then(snapshot => {
+                    const registeredCourses = snapshot.val() || {};
+                    const tbody = document.querySelector('#registered-courses tbody');
+                    tbody.innerHTML = '';
+                    let index = 1;
+
+                    if (Object.keys(registeredCourses).length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="4" style="text-align: center;">No courses registered</td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    const coursePromises = Object.keys(registeredCourses).map(courseId =>
+                        firebase.database().ref('courses/' + courseId).once('value')
+                    );
+
+                    return Promise.all(coursePromises)
+                        .then(snapshots => {
+                            snapshots.forEach(snapshot => {
+                                const course = snapshot.val();
+                                if (course) {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td>${index++}</td>
+                                        <td>${course.courseName}</td>
+                                        <td>${course.courseId}</td>
+                                        <td>
+                                            <button class="delete-btn" onclick="unregisterCourse('${snapshot.key}')">
+                                                Drop Course
+                                            </button>
+                                        </td>
+                                    `;
+                                    tbody.appendChild(row);
+                                }
+                            });
+                        });
+                });
+        }
+
+        // Add this function to store form values
+        function storeFormValues() {
+            return {
+                name: document.getElementById('name').value,
+                stdid: document.getElementById('stdid').value,
+                email: document.getElementById('email').value,
+                code: document.getElementById('code').value
+            };
+        }
+
+        // Add this function to restore form values
+        function restoreFormValues(values) {
+            document.getElementById('name').value = values.name;
+            document.getElementById('stdid').value = values.stdid;
+            document.getElementById('email').value = values.email;
+            document.getElementById('code').value = values.code;
+        }
+
+        // Add this function to your script
+        function unregisterCourse(courseId) {
+            if (confirm('Are you sure you want to unregister this course? This will also remove any existing calculations.')) {
+                const promises = [
+                    // Remove course registration
+                    firebase.database().ref(`students/${studentId}/registeredCourses/${courseId}`).remove(),
+                    // Remove calculations for this course
+                    firebase.database().ref(`calculations/${courseId}/${studentId}`).remove()
+                ];
+
+                Promise.all(promises)
+                    .then(() => {
+                        alert('Course unregistered successfully!');
+                        loadRegisteredCourses(); // Refresh the courses table
+                    })
+                    .catch(error => {
+                        console.error('Error unregistering course:', error);
+                        alert('Error: ' + error.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

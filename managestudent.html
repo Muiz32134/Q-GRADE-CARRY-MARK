@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding-left: 20px;
+            padding-top: 20px;
+            background-repeat: repeat-y;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            overflow-x: auto; /* Enable horizontal scrolling */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .header img {
+            margin-right: 10px;
+        }
+        img {
+            display: inline-block;
+        }
+        h1 {
+            display: inline-block;
+            margin: 0;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Ensure all columns have the same width */
+            font-size: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 100px; /* Move the button to the right */
+            font-size: 21.1px;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        td:last-child {
+            min-height: fit-content;
+        }
+        .action-buttons {
+            white-space: nowrap;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .action-buttons button {
+            margin: 0;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+
+        .search-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h2>Manage Students</h2>
+        <div class="search-controls">
+            <div class="search-group">
+                <div>
+                    <span class="filter-label">Search Student ID:</span>
+                    <input type="text" 
+                           id="student-id-search" 
+                           class="search-input" 
+                           placeholder="Search by student ID..."
+                           oninput="filterStudents()">
+                </div>
+                <div>
+                    <span class="filter-label">Search Student Name:</span>
+                    <input type="text" 
+                           id="student-name-search" 
+                           class="search-input" 
+                           placeholder="Search by student name..."
+                           oninput="filterStudents()">
+                </div>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Programme Code</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="student-table-body">
+                <!-- Data will be inserted dynamically -->
+            </tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button><a href="addstudent.html">Add New Student</a></button>
+            <button><a href="homepageadmin.html">Back</a></button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        // Fetch students from Firebase and display them
+        firebase.database().ref('students').once('value').then(function(snapshot) {
+            const students = snapshot.val();
+            const studentTableBody = document.getElementById('student-table-body');
+            studentTableBody.innerHTML = ''; // Clear existing rows
+            let index = 1;
+
+            for (const studentId in students) {
+                if (students.hasOwnProperty(studentId)) {
+                    const student = students[studentId];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index++}</td>
+                        <td>${student.stdid || ''}</td>
+                        <td>${student.name || ''}</td>
+                        <td>${student.email || ''}</td>
+                        <td>${student.code || ''}</td>
+                        <td class="action-buttons">
+                            <button onclick="editStudent('${studentId}')" style="background-color: #4CAF50;">✏️</button>
+                            <button onclick="manageStudentCourses('${studentId}')" style="background-color: #F5DBFC;">📚</button>
+                            <button onclick="deleteStudent('${studentId}')" style="background-color: #f44336;">🗑️</button>
+                        </td>
+                    `;
+                    studentTableBody.appendChild(row);
+                }
+            }
+        });
+
+        function editStudent(studentId) {
+            window.location.href = `editstudent.html?id=${studentId}`;
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student? This will also remove all their course registrations.')) {
+                const promises = [
+                    // Delete student record
+                    firebase.database().ref('students/' + studentId).remove(),
+                    
+                    // Delete user authentication (optional)
+                    firebase.database().ref('users').orderByChild('email')
+                        .equalTo(student.email)
+                        .once('value')
+                        .then(snap => {
+                            if (snap.exists()) {
+                                const userKey = Object.keys(snap.val())[0];
+                                return firebase.database().ref('users/' + userKey).remove();
+                            }
+                            return null;
+                        })
+                ];
+
+                Promise.all(promises)
+                    .then(() => {
+                        alert('Student deleted successfully.');
+                        window.location.reload();
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting student:', error);
+                        alert('Error: ' + error.message);
+                    });
+            }
+        }
+
+        // Add this new function
+        function filterStudents() {
+            const idSearchValue = document.getElementById('student-id-search').value.trim().toLowerCase();
+            const nameSearchValue = document.getElementById('student-name-search').value.trim().toLowerCase();
+            const rows = document.querySelectorAll('#student-table-body tr');
+            
+            rows.forEach(row => {
+                const studentId = row.cells[1].textContent.toLowerCase(); // Student ID column
+                const studentName = row.cells[2].textContent.toLowerCase(); // Student Name column
+                
+                const matchesId = !idSearchValue || studentId.includes(idSearchValue);
+                const matchesName = !nameSearchValue || studentName.includes(nameSearchValue);
+                
+                row.style.display = (matchesId && matchesName) ? '' : 'none';
+            });
+        }
+
+        function manageStudentCourses(studentId) {
+            window.location.href = `editcoursestd.html?id=${studentId}`;
+        }
+    </script>
+</body>
+</html>

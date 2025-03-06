@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="icons8-calculator-16.png" type="image/x-icon">
+    <style>
+        /* ...copy existing styles from setting.html... */
+        .password-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        input[readonly] {
+            cursor: not-allowed;
+        }
+        input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="calc.png" alt="Calculator">
+            <h1>Carry Mark Management System</h1>
+        </div>
+        <h1>Admin Settings</h1>
+        
+        <div class="password-container">
+            <h2>Change Lecturer Registration Secret Password</h2>
+            <table>
+                <tr>
+                    <td class="required">Current Secret Password</td>
+                    <td><input type="text" id="currentSecret" value="unisel123" readonly style="background-color: #f0f0f0;"></td>
+                </tr>
+                <tr>
+                    <td class="required">Current Admin Password</td>
+                    <td><input type="password" id="adminPassword" required></td>
+                </tr>
+                <tr>
+                    <td class="required">New Secret Password</td>
+                    <td><input type="password" id="newSecretPassword" required placeholder="Enter new secret password"></td>
+                </tr>
+                <tr>
+                    <td class="required">Confirm New Secret Password</td>
+                    <td><input type="password" id="confirmSecretPassword" required placeholder="Confirm new secret password"></td>
+                </tr>
+            </table>
+            <div id="statusMessage"></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button type="button" onclick="updateSecretPassword()">Update Password</button>
+                <button type="button" onclick="window.location.href='homepageadmin.html'">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="register.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if secret password exists, if not set default
+            firebase.database().ref('adminSettings/secretPassword').once('value')
+                .then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        // Set default password if none exists
+                        firebase.database().ref('adminSettings/secretPassword').set("unisel123")
+                            .then(() => console.log("Default secret password initialized"))
+                            .catch(error => console.error("Error setting default password:", error));
+                    }
+                });
+
+            // Get current secret password
+            firebase.database().ref('adminSettings/secretPassword').once('value')
+                .then((snapshot) => {
+                    const currentSecret = snapshot.val() || "unisel123";
+                    document.getElementById('currentSecret').value = currentSecret;
+                })
+                .catch(error => {
+                    console.error("Error loading current password:", error);
+                });
+        });
+
+        function updateSecretPassword() {
+            const adminPassword = document.getElementById('adminPassword').value;
+            const newPassword = document.getElementById('newSecretPassword').value;
+            const confirmPassword = document.getElementById('confirmSecretPassword').value;
+
+            // Verify admin is logged in
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showStatus("Please login first", false);
+                return;
+            }
+
+            // Validate admin credentials
+            firebase.database().ref('users/' + user.uid).once('value')
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    if (!userData || userData.role !== 'admin') {
+                        showStatus("Unauthorized access", false);
+                        return;
+                    }
+
+                    // Validate new password
+                    if (newPassword.length < 8) {
+                        showStatus("New password must be at least 8 characters", false);
+                        return;
+                    }
+
+                    if (newPassword !== confirmPassword) {
+                        showStatus("Passwords don't match", false);
+                        return;
+                    }
+
+                    // Update secret password in database
+                    return firebase.database().ref('adminSettings/secretPassword').set(newPassword);
+                })
+                .then(() => {
+                    showStatus("Secret password updated successfully!", true);
+                })
+                .catch(error => {
+                    showStatus("Error: " + error.message, false);
+                });
+        }
+
+        function showStatus(message, isSuccess) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status-message ${isSuccess ? 'success' : 'error'}`;
+            statusDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>
